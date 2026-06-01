@@ -1,0 +1,10 @@
+pre-commit:
+  commands:
+    check:
+      run: bun run check:fix && bun run format
+      stage_fixed: true
+
+pre-push:
+  commands:
+    validate:
+      run: bun run validate

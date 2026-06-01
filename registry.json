@@ -1,0 +1,104 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "model-picker",
+  "homepage": "https://github.com/f0rr0/model-picker",
+  "items": [
+    {
+      "name": "model-picker",
+      "type": "registry:block",
+      "title": "Model Picker",
+      "description": "Compact shadcn-style model picker with app-owned models, optional search, optional suggestions, reasoning, plan mode, and fast mode.",
+      "author": "d3serve Labs",
+      "categories": ["ai", "models", "picker"],
+      "dependencies": ["lucide-react"],
+      "docs": "Installed files are source-owned by your app. Pass the models you want in the picker, use createModelPickerModel/defineModelPickerModels for typed model lists, use resolveModelPickerSelection for Vercel AI SDK route handlers, and opt into enableModelSearch/showSuggestedModels when your model list grows. The core UI composes shadcn dropdown-menu and tooltip registry dependencies so Base UI and Radix projects keep their chosen primitive stack. This install is the non-animated baseline; use model-picker-animated if you want Motion layout and width animations.",
+      "meta": {
+        "aiSdk": "Vercel AI SDK model IDs are exposed through integrations.aiSdk and resolveModelPickerSelection.",
+        "motion": "This baseline item does not install motion. Install model-picker-animated for Motion-powered layout and width animations."
+      },
+      "registryDependencies": ["utils", "dropdown-menu", "tooltip"],
+      "files": [
+        {
+          "path": "registry/default/lib/model-picker-core.ts",
+          "type": "registry:lib",
+          "target": "@lib/model-picker-core.ts"
+        },
+        {
+          "path": "registry/default/ui/model-picker.tsx",
+          "type": "registry:ui",
+          "target": "@ui/model-picker.tsx"
+        }
+      ]
+    },
+    {
+      "name": "model-picker-animated",
+      "type": "registry:block",
+      "title": "Model Picker Animated",
+      "description": "Motion-powered drop-in Model Picker variant with animated model width, capability slots, and control layout changes.",
+      "author": "d3serve Labs",
+      "categories": ["ai", "models", "picker", "animation"],
+      "dependencies": ["lucide-react", "motion"],
+      "docs": "Install this instead of model-picker when you want the animated implementation. It uses the same ModelPicker API and installs to the same @ui/model-picker.tsx target, but adds Motion-powered layout and width animation. It still composes shadcn dropdown-menu and tooltip registry dependencies so Base UI and Radix projects keep their chosen primitive stack.",
+      "meta": {
+        "motion": "This item installs motion and uses motion/react for control layout, slot, and label width animation.",
+        "target": "Drop-in replacement for model-picker. Install one of model-picker or model-picker-animated."
+      },
+      "registryDependencies": ["utils", "dropdown-menu", "tooltip"],
+      "files": [
+        {
+          "path": "registry/default/lib/model-picker-core.ts",
+          "type": "registry:lib",
+          "target": "@lib/model-picker-core.ts"
+        },
+        {
+          "path": "registry/default/ui/model-picker-animated.tsx",
+          "type": "registry:ui",
+          "target": "@ui/model-picker.tsx"
+        }
+      ]
+    },
+    {
+      "name": "model-picker-sources",
+      "type": "registry:lib",
+      "title": "Model Picker Model Sources",
+      "description": "Optional dynamic model source helpers for Vercel AI Gateway and OpenRouter catalogs.",
+      "author": "d3serve Labs",
+      "categories": ["ai", "models", "catalog"],
+      "docs": "Install this only if you want dynamic catalog helpers. Use fetchVercelAIGatewayModels or fetchOpenRouterModels with modelIds, providers, filter, and limit options so your picker only receives models you intentionally expose.",
+      "files": [
+        {
+          "path": "registry/default/lib/model-picker-core.ts",
+          "type": "registry:lib",
+          "target": "@lib/model-picker-core.ts"
+        },
+        {
+          "path": "registry/default/lib/model-picker-sources.ts",
+          "type": "registry:lib",
+          "target": "@lib/model-picker-sources.ts"
+        }
+      ]
+    },
+    {
+      "name": "model-picker-tanstack-openrouter",
+      "type": "registry:lib",
+      "title": "Model Picker TanStack OpenRouter",
+      "description": "Optional type-safe TanStack AI OpenRouter adapter helpers for Model Picker models.",
+      "author": "d3serve Labs",
+      "categories": ["ai", "tanstack", "openrouter"],
+      "dependencies": ["@tanstack/ai-openrouter"],
+      "docs": "Install this only if your app uses TanStack AI with OpenRouter. createModelPickerOpenRouterModel keeps OpenRouter model IDs typed against the installed adapter, and createModelPickerOpenRouterTextAdapter avoids casts at the call site.",
+      "files": [
+        {
+          "path": "registry/default/lib/model-picker-core.ts",
+          "type": "registry:lib",
+          "target": "@lib/model-picker-core.ts"
+        },
+        {
+          "path": "registry/default/lib/model-picker-tanstack-openrouter.ts",
+          "type": "registry:lib",
+          "target": "@lib/model-picker-tanstack-openrouter.ts"
+        }
+      ]
+    }
+  ]
+}
