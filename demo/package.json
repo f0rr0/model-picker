@@ -1,0 +1,34 @@
+{
+  "name": "model-picker-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --hostname 0.0.0.0",
+    "start": "next start",
+    "typecheck": "next typegen && tsgo --project tsconfig.json --noEmit",
+    "vercel-build": "next build"
+  },
+  "dependencies": {
+    "clsx": "2.1.1",
+    "lucide-react": "1.17.0",
+    "motion": "12.40.0",
+    "next": "16.2.9",
+    "radix-ui": "1.6.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "tailwind-merge": "3.6.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.1",
+    "@types/node": "25.9.3",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "@typescript/native-preview": "7.0.0-dev.20260527.2",
+    "postcss": "8.5.15",
+    "tailwindcss": "4.3.1",
+    "typescript": "6.0.3"
+  },
+  "packageManager": "bun@1.3.8"
+}
