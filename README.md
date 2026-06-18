@@ -1,6 +1,6 @@
 # Model Picker
 
-A shadcn-style source component for AI model selection. The default install gives you a non-animated model picker, optional search, optional suggested models, reasoning effort, plan mode, and fast mode without shipping a bundled model catalog or Motion dependency.
+A shadcn-style source component for AI model selection. The default install gives you a non-animated model picker, optional suggested models, reasoning effort, plan mode, and fast mode without shipping a bundled model catalog or Motion dependency.
 
 The core registry item installs:
 
@@ -56,12 +56,16 @@ const models = defineModelPickerModels([
     integrations: {
       aiSdk: { modelId: "openai/gpt-5.4-mini" },
     },
-    suggested: true,
   }),
   createModelPickerModel({
-    id: "acme/internal-agent",
-    label: "Internal Agent",
-    provider: "acme",
+    id: "anthropic/claude-sonnet-4.6",
+    label: "Claude Sonnet 4.6",
+    provider: "anthropic",
+    providerLabel: "Anthropic",
+    reasoningLevels: ["low", "medium", "high", "xhigh"],
+    integrations: {
+      aiSdk: { modelId: "anthropic/claude-sonnet-4.6" },
+    },
   }),
 ]);
 
@@ -70,15 +74,7 @@ export function ModelPickerExample() {
     ModelPickerControlValue<(typeof models)[number]["id"]>
   >(() => createModelPickerControlValue(models[0]));
 
-  return (
-    <ModelPicker
-      enableModelSearch
-      models={models}
-      onValueChange={setValue}
-      showSuggestedModels
-      value={value}
-    />
-  );
+  return <ModelPicker models={models} onValueChange={setValue} value={value} />;
 }
 ```
 
@@ -98,7 +94,6 @@ import { fetchVercelAIGatewayModels } from "@/lib/model-picker-sources";
 export async function getPickerModels() {
   return fetchVercelAIGatewayModels({
     modelIds: ["openai/gpt-5.4-mini", "anthropic/claude-sonnet-4.6"],
-    suggestedModelIds: ["anthropic/claude-sonnet-4.6"],
   });
 }
 ```

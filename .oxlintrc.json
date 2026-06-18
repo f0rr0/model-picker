@@ -5,7 +5,13 @@
     "perf": "warn",
     "suspicious": "warn"
   },
-  "ignorePatterns": ["node_modules", "public/r", "bun.lock"],
+  "ignorePatterns": [
+    "node_modules",
+    "public/r",
+    "bun.lock",
+    "demo/.next",
+    "demo/next-env.d.ts"
+  ],
   "options": {
     "typeAware": true
   },

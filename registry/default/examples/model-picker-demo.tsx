@@ -11,7 +11,6 @@ import {
 
 const models = defineModelPickerModels([
   createModelPickerModel({
-    description: "General purpose model for everyday chat.",
     id: "openai/gpt-5.4-mini",
     integrations: {
       aiSdk: {
@@ -21,12 +20,10 @@ const models = defineModelPickerModels([
     label: "GPT-5.4 Mini",
     provider: "openai",
     providerLabel: "OpenAI",
-    shortLabel: "GPT Mini",
-    suggested: true,
+    shortLabel: "GPT-5.4 Mini",
   }),
   createModelPickerModel({
     defaultReasoningLevel: "high",
-    description: "Strong coding and agentic work.",
     id: "anthropic/claude-sonnet-4.6",
     integrations: {
       aiSdk: {
@@ -37,17 +34,21 @@ const models = defineModelPickerModels([
     provider: "anthropic",
     providerLabel: "Anthropic",
     reasoningLevels: ["low", "medium", "high", "xhigh"],
-    shortLabel: "Sonnet",
-    suggested: true,
+    shortLabel: "Sonnet 4.6",
   }),
   createModelPickerModel({
-    description: "Your own routed model.",
-    id: "acme/internal-agent",
-    keywords: ["agent", "tool-use"],
-    label: "Internal Agent",
-    provider: "acme",
-    providerLabel: "Acme",
-    shortLabel: "Internal",
+    defaultReasoningLevel: "high",
+    id: "google/gemini-3.1-pro",
+    integrations: {
+      aiSdk: {
+        modelId: "google/gemini-3.1-pro",
+      },
+    },
+    label: "Gemini 3.1 Pro",
+    provider: "google",
+    providerLabel: "Google",
+    reasoningLevels: ["low", "medium", "high"],
+    shortLabel: "Gemini 3.1 Pro",
   }),
 ]);
 
@@ -58,13 +59,7 @@ export function ModelPickerDemo() {
 
   return (
     <div className="flex w-full max-w-3xl items-center justify-end rounded-2xl border bg-background p-3">
-      <ModelPicker
-        enableModelSearch
-        models={models}
-        onValueChange={setValue}
-        showSuggestedModels
-        value={value}
-      />
+      <ModelPicker models={models} onValueChange={setValue} value={value} />
     </div>
   );
 }

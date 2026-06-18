@@ -1,0 +1,25 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "incremental": true,
+    "jsx": "preserve",
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@/components/ui/*": ["./components/ui/*"],
+      "@/lib/*": ["./lib/*"]
+    },
+    "types": ["react", "react-dom"]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/dev/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "../registry/default/lib/**/*.ts",
+    "../registry/default/ui/model-picker.tsx"
+  ],
+  "exclude": ["node_modules"]
+}

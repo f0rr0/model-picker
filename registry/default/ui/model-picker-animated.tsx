@@ -62,9 +62,6 @@ export type ModelPickerProps<
 > = {
   className?: string;
   disabled?: boolean;
-  emptyModelSearchMessage?: string;
-  enableModelSearch?: boolean;
-  modelSearchPlaceholder?: string;
   models: readonly TModel[];
   onValueChange: (value: ModelPickerControlValue<TModel["id"]>) => void;
   providerLogoSrc?: (model: TModel) => string | null;
@@ -79,9 +76,6 @@ export type ModelPickerProps<
 export function ModelPicker<const TModel extends ModelPickerModelConfig>({
   className,
   disabled,
-  emptyModelSearchMessage = "No models found.",
-  enableModelSearch = false,
-  modelSearchPlaceholder = "Search models...",
   models,
   onValueChange,
   providerLogoSrc = getDefaultProviderLogoSrc,
@@ -196,9 +190,6 @@ export function ModelPicker<const TModel extends ModelPickerModelConfig>({
       <ModelPickerMenu
         animateWidth={animateModelWidth}
         disabled={disabled}
-        emptySearchMessage={emptyModelSearchMessage}
-        enableSearch={enableModelSearch}
-        modelSearchPlaceholder={modelSearchPlaceholder}
         models={models}
         onSelect={changeModel}
         providerLogoSrc={providerLogoSrc}
@@ -268,9 +259,6 @@ export function ModelPicker<const TModel extends ModelPickerModelConfig>({
 function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
   animateWidth,
   disabled,
-  emptySearchMessage,
-  enableSearch,
-  modelSearchPlaceholder,
   models,
   onSelect,
   providerLogoSrc,
@@ -281,9 +269,6 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
 }: {
   animateWidth: boolean;
   disabled?: boolean;
-  emptySearchMessage: string;
-  enableSearch: boolean;
-  modelSearchPlaceholder: string;
   models: readonly TModel[];
   onSelect: (model: TModel) => void;
   providerLogoSrc: (model: TModel) => string | null;
@@ -293,29 +278,22 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
   suggestedModelsLabel: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const normalizedSearchQuery = normalizeModelSearchValue(searchQuery);
-  const filteredModels = getFilteredModels(models, normalizedSearchQuery);
   const suggestedModels = showSuggestedModels
-    ? getSuggestedModels(filteredModels, suggestedModelIds)
+    ? getSuggestedModels(models, suggestedModelIds)
     : [];
   const suggestedModelIdSet = new Set(suggestedModels.map((model) => model.id));
   const remainingModels =
     suggestedModels.length > 0
-      ? filteredModels.filter((model) => !suggestedModelIdSet.has(model.id))
-      : filteredModels;
-  const hasSearchResults =
-    suggestedModels.length > 0 || remainingModels.length > 0;
+      ? models.filter((model) => !suggestedModelIdSet.has(model.id))
+      : models;
+
+  const selectModel = (model: TModel) => {
+    onSelect(model);
+    setOpen(false);
+  };
 
   return (
-    <ShadcnDropdownMenu
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen);
-        if (!nextOpen) {
-          setSearchQuery("");
-        }
-      }}
-    >
+    <ShadcnDropdownMenu onOpenChange={setOpen}>
       <AnimatedIntrinsicWidth
         animate={animateWidth}
         watchKey={selectedModel.id}
@@ -323,7 +301,7 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
         <DropdownMenuTrigger
           aria-label="Select model"
           className={cn(
-            "group/control inline-flex min-w-0 shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50",
+            "group/control inline-flex min-w-0 shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50",
             controlPillClassName,
             quietControlClassName,
             "gap-1.5 px-2",
@@ -349,13 +327,6 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
         className="w-[min(22rem,calc(100vw-2rem))]"
         side="top"
       >
-        {enableSearch ? (
-          <ModelSearchInput
-            onValueChange={setSearchQuery}
-            placeholder={modelSearchPlaceholder}
-            value={searchQuery}
-          />
-        ) : null}
         {suggestedModels.length > 0 ? (
           <>
             <DropdownMenuLabel className="px-2 py-1.5 font-medium text-muted-foreground text-xs">
@@ -366,7 +337,7 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
                 <ModelMenuItem
                   key={model.id}
                   model={model}
-                  onSelect={onSelect}
+                  onSelect={selectModel}
                   providerLogoSrc={providerLogoSrc}
                   selected={model.id === selectedModel.id}
                 />
@@ -380,14 +351,14 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
         {remainingModels.length > 0 ? (
           <>
             <DropdownMenuLabel className="px-2 py-1.5 font-medium text-muted-foreground text-xs">
-              {normalizedSearchQuery ? "Results" : "Models"}
+              Models
             </DropdownMenuLabel>
             <DropdownMenuGroup>
               {remainingModels.map((model) => (
                 <ModelMenuItem
                   key={model.id}
                   model={model}
-                  onSelect={onSelect}
+                  onSelect={selectModel}
                   providerLogoSrc={providerLogoSrc}
                   selected={model.id === selectedModel.id}
                 />
@@ -395,54 +366,8 @@ function ModelPickerMenu<const TModel extends ModelPickerModelConfig>({
             </DropdownMenuGroup>
           </>
         ) : null}
-        {hasSearchResults ? null : (
-          <div className="px-2 py-6 text-center text-muted-foreground text-sm">
-            {emptySearchMessage}
-          </div>
-        )}
       </PickerMenuContent>
     </ShadcnDropdownMenu>
-  );
-}
-
-function ModelSearchInput({
-  onValueChange,
-  placeholder,
-  value,
-}: {
-  onValueChange: (value: string) => void;
-  placeholder: string;
-  value: string;
-}) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useLayoutEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      inputRef.current?.focus();
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  return (
-    <div className="px-1 pb-2">
-      <input
-        aria-label={placeholder}
-        className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        autoComplete="off"
-        onChange={(event) => onValueChange(event.currentTarget.value)}
-        onKeyDown={(event) => {
-          if (event.key !== "Escape") {
-            event.stopPropagation();
-          }
-        }}
-        placeholder={placeholder}
-        ref={inputRef}
-        spellCheck={false}
-        type="search"
-        value={value}
-      />
-    </div>
   );
 }
 
@@ -459,17 +384,41 @@ function ModelMenuItem<const TModel extends ModelPickerModelConfig>({
 }) {
   return (
     <PickerMenuItem onActivate={() => onSelect(model)}>
+      <ModelMenuItemContent
+        model={model}
+        providerLogoSrc={providerLogoSrc}
+        selected={selected}
+      />
+    </PickerMenuItem>
+  );
+}
+
+function ModelMenuItemContent<const TModel extends ModelPickerModelConfig>({
+  model,
+  providerLogoSrc,
+  selected,
+}: {
+  model: TModel;
+  providerLogoSrc: (model: TModel) => string | null;
+  selected: boolean;
+}) {
+  const description = getModelMenuDescription(model);
+
+  return (
+    <>
       <ProviderLogo model={model} src={providerLogoSrc(model)} />
       <span className="grid min-w-0 flex-1 text-left">
         <span className="truncate">{model.label}</span>
-        <span className="truncate text-muted-foreground text-xs">
-          {getModelMenuDescription(model)}
-        </span>
+        {description ? (
+          <span className="truncate text-muted-foreground text-xs">
+            {description}
+          </span>
+        ) : null}
       </span>
       {selected ? (
         <CheckIcon className="ml-auto size-4 text-muted-foreground" />
       ) : null}
-    </PickerMenuItem>
+    </>
   );
 }
 
@@ -500,7 +449,7 @@ function ReasoningPicker({
         <DropdownMenuTrigger
           aria-label="Select reasoning"
           className={cn(
-            "group/control inline-flex min-w-0 shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50",
+            "group/control inline-flex min-w-0 shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50",
             controlPillClassName,
             quietControlClassName,
             "gap-1.5 px-2",
@@ -601,7 +550,7 @@ function PickerButton({
     <button
       aria-label={label}
       className={cn(
-        "group/control inline-flex min-w-0 shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50",
+        "group/control inline-flex min-w-0 shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50",
         controlPillClassName,
         quietControlClassName,
         "gap-1.5 px-2",
@@ -702,7 +651,7 @@ function TogglePill({
         aria-label={active ? label : offLabel}
         aria-pressed={active}
         className={cn(
-          "group/control inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50",
+          "group/control inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding font-medium outline-none select-none focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50",
           controlPillClassName,
           "min-w-7 overflow-hidden",
           active
@@ -1163,19 +1112,6 @@ function mergeWillChange(current: string, next: string) {
   return values.includes(next) ? current : [...values, next].join(", ");
 }
 
-function getFilteredModels<const TModel extends ModelPickerModelConfig>(
-  models: readonly TModel[],
-  normalizedSearchQuery: string,
-) {
-  if (!normalizedSearchQuery) {
-    return [...models];
-  }
-
-  return models.filter((model) =>
-    getModelSearchText(model).includes(normalizedSearchQuery),
-  );
-}
-
 function getSuggestedModels<const TModel extends ModelPickerModelConfig>(
   models: readonly TModel[],
   suggestedModelIds: readonly string[],
@@ -1194,34 +1130,8 @@ function getSuggestedModels<const TModel extends ModelPickerModelConfig>(
   return [...orderedSuggestedModels, ...flaggedSuggestedModels];
 }
 
-function getModelSearchText(model: ModelPickerModelConfig) {
-  return normalizeModelSearchValue(
-    [
-      model.id,
-      model.label,
-      model.shortLabel,
-      model.provider,
-      model.providerLabel,
-      model.description,
-      ...(model.keywords ?? []),
-      model.integrations?.aiSdk?.modelId,
-      model.integrations?.openRouter?.modelId,
-      model.metadata?.source,
-    ]
-      .filter(Boolean)
-      .join(" "),
-  );
-}
-
-function normalizeModelSearchValue(value: string) {
-  return value.trim().toLowerCase();
-}
-
 function getModelMenuDescription(model: ModelPickerModelConfig) {
-  const provider = model.providerLabel ?? model.provider ?? "Custom";
-  const description = model.description?.trim();
-
-  return description ? `${provider} - ${description}` : provider;
+  return model.description?.trim() || null;
 }
 
 export type ProviderLogoProps = Omit<
