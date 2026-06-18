@@ -166,7 +166,6 @@ export default function App() {
       <section className="flex w-full max-w-2xl flex-col gap-4">
         <div className="flex items-center justify-end rounded-xl border bg-card p-3 text-card-foreground shadow-sm">
           <ModelPicker
-            enableModelSearch
             models={models}
             onValueChange={setValue}
             showSuggestedModels

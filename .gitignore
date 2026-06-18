@@ -3,5 +3,7 @@ node_modules
 dist
 build
 .turbo
+.next
 .vercel
+*.tsbuildinfo
 *.log
