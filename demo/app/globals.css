@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @source "../**/*.{ts,tsx}";
-@source "../../registry/default/**/*.{ts,tsx}";
 
 @theme inline {
   --color-accent: var(--accent);
