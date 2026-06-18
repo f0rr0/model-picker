@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "description": "A shadcn-style source component for app-owned AI model selection with suggestions, reasoning, plan mode, and fast mode.",
   "license": "MIT",
+  "workspaces": [
+    "demo"
+  ],
   "type": "module",
   "scripts": {
     "build:registry": "shadcn build",
     "check": "ultracite check --type-aware",
     "check:fix": "ultracite fix --type-aware",
-    "demo": "next dev demo --hostname 0.0.0.0",
-    "demo:build": "next build demo",
-    "demo:typecheck": "next typegen demo && tsgo --project demo/tsconfig.json --noEmit",
+    "demo": "bun run --filter model-picker-demo dev",
+    "demo:build": "bun run --filter model-picker-demo build",
+    "demo:typecheck": "bun run --filter model-picker-demo typecheck",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint . --type-aware",
@@ -20,7 +23,8 @@
     "registry:validate": "shadcn registry validate",
     "smoke:consumer": "node scripts/verify-consumer.mjs",
     "typecheck": "tsgo --noEmit",
-    "validate": "bun run typecheck && bun run lint && bun run format:check && bun run registry:validate && bun run build:registry"
+    "validate": "bun run typecheck && bun run lint && bun run format:check && bun run registry:validate && bun run build:registry",
+    "vercel-build": "bun run --filter model-picker-demo vercel-build"
   },
   "dependencies": {
     "clsx": "2.1.1",
@@ -31,6 +35,7 @@
     "@tailwindcss/postcss": "^4.3.1",
     "@tanstack/ai": "0.23.1",
     "@tanstack/ai-openrouter": "0.10.0",
+    "@types/node": "25.9.3",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "@typescript/native-preview": "7.0.0-dev.20260527.2",
